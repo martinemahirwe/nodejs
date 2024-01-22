@@ -14,11 +14,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/customers", routes);
 
-const url = process.env.url;
-
 mongoose
   .connect(
-    "mongodb+srv://martinemahirwe:martine@customerapi.jnaqr88.mongodb.net/?retryWrites=true&w=majority"
+    "mongodb+srv://<username>:<password>@customerapi.jnaqr88.mongodb.net/?retryWrites=true&w=majority"
   )
   .then(() => {
     console.log("Connected to MongoDB");
