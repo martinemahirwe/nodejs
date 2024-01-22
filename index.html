@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer CRUD</title>
+  </head>
+  <body>
+    <h1>Customer CRUD</h1>
+
+    <!-- Display Customers -->
+    <h2>Customers:</h2>
+    <ul id="customerList"></ul>
+
+    <!-- Add New Customer Form -->
+    <h2>Add New Customer:</h2>
+    <form id="addCustomerForm">
+      <label for="firstName">First Name:</label>
+      <input type="text" id="firstName" required />
+
+      <label for="lastName">Last Name:</label>
+      <input type="text" id="lastName" required />
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" required />
+
+      <label for="phoneNumber">Phone Number:</label>
+      <input type="text" id="phoneNumber" required />
+
+      <button type="submit">Add Customer</button>
+    </form>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const customerList = document.getElementById("customerList");
+        const addCustomerForm = document.getElementById("addCustomerForm");
+        const endpointURL =
+          "https://eu-central-1.aws.data.mongodb-api.com/app/data-xktzk/endpoint/data/v1/customers";
+
+        // Fetch and display customers on page load
+        fetchCustomers();
+
+        // Add event listener for form submission
+        addCustomerForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+
+          const formData = new FormData(addCustomerForm);
+          const customerData = {};
+          formData.forEach((value, key) => {
+            customerData[key] = value;
+          });
+
+          // Send a POST request to add a new customer
+          fetch(endpointURL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(customerData),
+          })
+            .then((response) => response.json())
+            .then(() => {
+              // After successful addition, fetch and display updated customers
+              fetchCustomers();
+              // Clear the form
+              addCustomerForm.reset();
+            })
+            .catch((error) => console.error("Error adding customer:", error));
+        });
+
+        // Function to fetch and display customers
+        function fetchCustomers() {
+          // Send a GET request to retrieve all customers
+          fetch(endpointURL)
+            .then((response) => response.json())
+            .then((customers) => {
+              // Display customers in the list
+              customerList.innerHTML = customers
+                .map(
+                  (customer) =>
+                    `<li>${customer.firstName} ${customer.lastName} - ${customer.email}</li>`
+                )
+                .join("");
+            })
+            .catch((error) =>
+              console.error("Error fetching customers:", error)
+            );
+        }
+      });
+    </script>
+  </body>
+</html>
